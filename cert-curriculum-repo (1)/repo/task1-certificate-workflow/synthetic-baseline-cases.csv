@@ -1,0 +1,21 @@
+case_id,cert_type,rework_needed,turnaround_days,exception_note
+SYN-01,BONAFIDE,N,3,
+SYN-02,NO_DUES,N,4,
+SYN-03,BONAFIDE,N,2,
+SYN-04,CHARACTER,Y,6,missing purpose
+SYN-05,BONAFIDE,N,3,
+SYN-06,TRANSCRIPT_REQUEST,N,5,
+SYN-07,BONAFIDE,Y,8,signatory absent
+SYN-08,NO_DUES,N,3,
+SYN-09,BONAFIDE,N,4,
+SYN-10,BONAFIDE,N,2,
+SYN-11,CHARACTER,Y,7,missing document
+SYN-12,BONAFIDE,N,3,
+SYN-13,NO_DUES,N,4,
+SYN-14,TRANSCRIPT_REQUEST,Y,9,signatory absent + missing document
+SYN-15,BONAFIDE,N,3,
+SYN-16,BONAFIDE,N,5,
+SYN-17,NO_DUES,N,4,
+SYN-18,BONAFIDE,N,3,
+SYN-19,CHARACTER,Y,6,repeat request
+SYN-20,BONAFIDE,N,4,

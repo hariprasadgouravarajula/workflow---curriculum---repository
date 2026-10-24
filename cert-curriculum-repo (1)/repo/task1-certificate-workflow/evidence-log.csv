@@ -1,0 +1,10 @@
+date,label,data_origin,entry,source,confidence
+2026-10-24,ASSUMPTION,SYNTHETIC,"Requests are submitted on paper at the Academic Office counter","Illustrative; NOT observed at any college",Low
+2026-10-24,ASSUMPTION,SYNTHETIC,"Flow is: counter -> clerk check -> authority signature -> seal -> collection","Illustrative; NOT observed",Low
+2026-10-24,ASSUMPTION,SYNTHETIC,"Handoffs use paper files, with WhatsApp or phone for reminders","Illustrative; NOT observed",Low
+2026-10-24,ESTIMATE,SYNTHETIC,"About 400 requests per semester (about 800 per year)","Invented planning figure",Low
+2026-10-24,ESTIMATE,SYNTHETIC,"Staff time about 14 min per request today","Invented planning figure",Low
+2026-10-24,OBSERVED,SYNTHETIC,"20 synthetic cases tallied: 5 needed rework (25%); median turnaround 4 days; mean 4.4 days","synthetic-baseline-cases.csv (generated, not real records)",Medium (computed correctly from the file; the file itself is invented)
+2026-10-24,OBSERVED,SYNTHETIC,"Prototype passes 21/21 synthetic checks","run_tests.py -> test-results.md",High (about the code only)
+2026-10-24,ASSUMPTION,SYNTHETIC,"Bonafide letters need a designated authority's signature","Illustrative",Low
+REPLACE-ME,OBSERVED,REAL,"(Your real observation, role of person who gave permission, no names)","(How you obtained it)",

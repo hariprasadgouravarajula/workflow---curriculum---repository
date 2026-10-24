@@ -1,0 +1,3 @@
+TP=40 FP=10 FN=20 TN=130 (n=200)
+accuracy = 170/200 = 0.85; precision = 40/50 = 0.80; recall = 40/60 = 0.667; F1 = 0.727
+Note: accuracy looks high, but a third of actual positives are missed.

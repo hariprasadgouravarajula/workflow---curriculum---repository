@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Credit rebalance calculator (semesters I-VII)</title>
+<style>
+:root{--bg:#eef2f5;--panel:#fff;--ink:#14212b;--mute:#58697a;--line:#cfd8e0;--accent:#0e5a5a;--keep:#8896a4;--update:#2b6cb0;--reduce:#b7791f;--add:#2f855a;--bad:#b83232}
+@media (prefers-color-scheme:dark){:root{--bg:#10181f;--panel:#17222c;--ink:#e6edf3;--mute:#9bacbc;--line:#2a3a48;--accent:#4fb3b3;--keep:#7b8a99;--update:#63a4e8;--reduce:#e0a63e;--add:#5cc08c;--bad:#ef7676}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 48px}
+h1{font:600 26px/1.2 Charter,Georgia,serif;margin:0 0 4px}h2{font:600 17px Charter,Georgia,serif;margin:0 0 10px}
+.note{color:var(--mute);margin:0 0 18px;max-width:70ch}
+.totals{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.box b{display:block;font-size:24px}.box span{color:var(--mute);font-size:13px}
+.ok{color:var(--add)}.warn{color:var(--bad)}
+.sem{display:grid;grid-template-columns:34px 1fr 1fr 54px;gap:6px 10px;align-items:center;font-size:13px}
+.bar{height:10px;border-radius:2px;background:var(--keep)}.bar.p{background:var(--accent)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 10px}
+select,input[type=search],input[type=number],button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:6px 8px}
+button{cursor:pointer}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.tw{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:640px}th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-weight:600;color:var(--mute);font-size:13px}td input{width:64px}
+.tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;border:1px solid currentColor}
+.KEEP{color:var(--keep)}.UPDATE{color:var(--update)}.REDUCE{color:var(--reduce)}.ADD{color:var(--add)}
+</style></head><body><main>
+<h1>Credit rebalance calculator</h1>
+<p class="note">Semesters I-VII as shown in the student portal (152 credits; semester VIII was not available). Student proposal, not an official syllabus revision. Edit a proposed-credit value to see totals, the share of the programme changed, and semester load update.</p>
+<section class="totals" aria-live="polite">
+ <div class="box"><span>Current total</span><b id="t-old"></b></div>
+ <div class="box"><span>Proposed total</span><b id="t-new"></b><span id="t-bal"></span></div>
+ <div class="box"><span>Credits affected (updated + freed + added)</span><b id="t-aff"></b><span id="t-pct"></span></div>
+</section>
+<section class="box" style="margin-bottom:18px"><h2>Credits per semester (grey: current, teal: proposed)</h2><div class="sem" id="sems"></div></section>
+<div class="controls">
+ <label>Semester <select id="f-sem"><option value="0">All</option></select></label>
+ <label>Status <select id="f-st"><option value="">All</option><option>KEEP</option><option>UPDATE</option><option>REDUCE</option><option>ADD</option></select></label>
+ <input id="f-q" type="search" placeholder="Search course" aria-label="Search course">
+ <button id="reset">Reset to proposal</button>
+</div>
+<div class="tw"><table><thead><tr><th>Sem</th><th>Course</th><th>Current</th><th>Proposed</th><th>Status</th><th>Reason</th></tr></thead><tbody id="rows"></tbody></table></div>
+</main>
+<script>
+const DATA=/*DATA*/;
+const base=DATA.map(r=>r.new_credits);let cur=[...base];
+const $=id=>document.getElementById(id);
+for(let s=1;s<=7;s++)$("f-sem").add(new Option("Semester "+s,s));
+const status=(r,n)=>r.credits===0?"ADD":n<r.credits?"REDUCE":r.status==="UPDATE"?"UPDATE":n>r.credits?"ADD":"KEEP";
+const affected=(r,n)=>r.credits===0?n:n<r.credits?r.credits-n:r.status==="UPDATE"?r.credits+(n-r.credits):n-r.credits;
+function totals(){
+ const old=DATA.reduce((a,r)=>a+r.credits,0),nw=cur.reduce((a,b)=>a+b,0);
+ const aff=DATA.reduce((a,r,i)=>a+affected(r,cur[i]),0),pct=aff/old*100;
+ $("t-old").textContent=old;$("t-new").textContent=nw;
+ $("t-bal").textContent=nw===old?"Balanced":"Off by "+(nw-old)+" credits";$("t-bal").className=nw===old?"ok":"warn";
+ $("t-aff").textContent=aff;$("t-pct").textContent=pct.toFixed(1)+"% of credits shown"+(pct>=20&&pct<=25?" (within 20-25%)":" (target 20-25%)");$("t-pct").className=pct>=20&&pct<=25?"ok":"warn";
+ let h="";for(let s=1;s<=7;s++){const o=DATA.filter(r=>r.sem===s).reduce((a,r)=>a+r.credits,0),n=DATA.reduce((a,r,i)=>a+(r.new_sem===s?cur[i]:0),0);
+  h+=`<span>S${s}</span><div class="bar" style="width:${o*6}px"></div><div class="bar p" style="width:${n*6}px"></div><span>${n}</span>`}
+ $("sems").innerHTML=h;
+}
+function render(){
+ const s=+$("f-sem").value,st=$("f-st").value,q=$("f-q").value.toLowerCase();
+ $("rows").innerHTML=DATA.map((r,i)=>({r,i})).filter(({r,i})=>(!s||r.sem===s||r.new_sem===s)&&(!st||status(r,cur[i])===st)&&r.course.toLowerCase().includes(q))
+ .map(({r,i})=>{const t=status(r,cur[i]);return `<tr><td>${r.new_sem}</td><td>${r.course}</td><td>${r.credits}</td><td><input type="number" min="0" max="12" value="${cur[i]}" data-i="${i}" aria-label="Proposed credits for ${r.course}"></td><td><span class="tag ${t}">${t}</span></td><td>${r.reason||""}</td></tr>`}).join("")||`<tr><td colspan="6">No courses match these filters. Clear a filter to see more.</td></tr>`;
+ totals();
+}
+$("rows").addEventListener("change",e=>{if(e.target.dataset.i!==undefined){cur[+e.target.dataset.i]=Math.max(0,+e.target.value||0);render()}});
+["f-sem","f-st"].forEach(i=>$(i).onchange=render);$("f-q").oninput=render;
+$("reset").onclick=()=>{cur=[...base];render()};render();
+</script></body></html>
